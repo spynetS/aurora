@@ -36,39 +36,7 @@ result_storage_file = os.path.join(script_dir, ".aurora_result_storage_file")
 
 # ---------------- FUNCTIONS ----------------
 
-def should_sync():
-    """Check if we have synced in given sync time"""
-    current_time = datetime.datetime.now()
 
-    if os.path.exists(time_flag_file):
-        with open(time_flag_file, "r") as f:
-            next_sync_str = f.read().strip()
-        if next_sync_str:
-           next_sync = datetime.datetime.fromisoformat(next_sync_str)
-
-           if current_time < next_sync:
-                return False
-
-    next_sync = current_time + datetime.timedelta(hours=config.sync_time)
-    with open(time_flag_file, "w") as f:
-        f.write(next_sync.isoformat())
-    return True
-
-
-def should_ask_today_function():
-    """Check if we have already asked the user today."""
-    today = datetime.date.today().isoformat()
-
-    if os.path.exists(flag_file):
-        with open(flag_file, "r") as f:
-            last_date = f.read().strip()
-        if last_date == today:
-            config.should_ask_today = False
-            return
-
-    with open(flag_file, "w") as f:
-        f.write(today)
-    config.should_ask_today = True
 
 
 def update():
@@ -92,37 +60,20 @@ def package_count():
 
 def sas_response():
     """Print sassy response according to update stage and whether we ask today."""
-    if config.should_ask_today:
-        if updateable_packages == 0:
+    
+    if updateable_packages == 0:
             print("Aurora:", random.choice(responses.stage_0))
-        elif updateable_packages < config.normal_threshold:
+    elif updateable_packages < config.normal_threshold:
             print("Aurora:", random.choice(responses.stage_1))
-        elif updateable_packages < config.moderate_threshold:
+    elif updateable_packages < config.moderate_threshold:
             print("Aurora:", random.choice(responses.stage_2_update))
-        elif updateable_packages < config.high_threshold:
+    elif updateable_packages < config.high_threshold:
             print("Aurora:", random.choice(responses.stage_3_update))
-        elif updateable_packages < config.critical_threshold:
+    elif updateable_packages < config.critical_threshold:
             print("Aurora:", random.choice(responses.stage_4_update))
-        else:
-            print("Aurora:", random.choice(responses.stage_5))
     else:
-        # Regular sassy responses when not prompting
-        if updateable_packages == 0:
-            print("Aurora:", random.choice(responses.stage_0))
-        elif updateable_packages < config.normal_threshold:
-            print("Aurora:", random.choice(responses.stage_1))
-        elif updateable_packages < config.moderate_threshold:
-            print("Aurora:", random.choice(responses.stage_2))
-        elif updateable_packages < config.high_threshold:
-            print("Aurora:", random.choice(responses.stage_3))
-        elif updateable_packages < config.critical_threshold:
-            print("Aurora:", random.choice(responses.stage_4))
-        elif updateable_packages < config.atomic_threshold:
-            print("Aurora:", random.choice(responses.stage_5))
-        elif updateable_packages < config.nuclear_threshold:
-            print("Aurora:", random.choice(responses.stage_6))
-        else:
-            print("Aurora:", random.choice(responses.stage_7))
+        print("Aurora:", random.choice(responses.stage_5))
+    
 
 
 def update_handler():
@@ -162,19 +113,11 @@ check = subprocess.run(["pacman", "-Q", "pacman-contrib"], capture_output=True, 
 if check.returncode != 0:
     print("Aurora:", random.choice(responses.missing_contrib))
 else:
-    if should_sync():
-        result = subprocess.run(["checkupdates"], capture_output=True, text=True)
-        updateable_packages = len(result.stdout.splitlines())
-        with open(result_storage_file, "w") as f:
-            f.write(str(updateable_packages))
+    with open("/tmp/aurora.log", "r") as f:
+        updateable_packages = int(f.read().strip())
 
-    else:
-       with open(result_storage_file, "r") as f:
-            updateable_packages = int(f.read().strip())
-
-    should_ask_today_function()
-    package_count()
-    update_handler()
+package_count()
+update_handler()
 
 
 
