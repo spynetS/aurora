@@ -30,6 +30,7 @@ timer = Path("/etc/systemd/system/aurora.timer")
 # Checking for existing service and timer files and removing them if they exist
 if service.exists():
     say("Existing service detected. I’ll clean that up.")
+    say("This might ask for your password. Depends on how recently you proved you’re allowed to do things.")
     write("sudo rm /etc/systemd/system/aurora.service")
     try:
         terminal("removing existing aurora.service...")
@@ -88,7 +89,7 @@ if not service.exists() or not timer.exists():
         say("systemd did not cooperate.")
 
     say("Activating Aurora.")
-    say("This part needs your password. Blame permissions, not me.")
+    say("Relax. If I wanted it, you’d never know.")
     write("systemctl enable --now aurora.timer")
     if subprocess.run(["systemctl", "enable", "--now", "aurora.timer"]).returncode != 0:
         say("Activation failed.")

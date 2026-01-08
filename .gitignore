@@ -8,5 +8,5 @@ tmp/
 build
 htmlcov
 personal/
-.service
-.timer
+aurora.service
+aurora.timer
