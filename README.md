@@ -6,6 +6,7 @@ It uses systemd timers to run update checks automatically in the background.
 * Python 3
 * systemd
 * pacman-contrib(for checkupdates)
+* python-rich
 Install dependency:
 ```bash
 sudo pacman -S pacman-contrib 

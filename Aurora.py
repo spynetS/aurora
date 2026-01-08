@@ -29,6 +29,8 @@ import time
 import config
 from pathlib import Path
 
+from daemon import check_updates
+
 # ---------------- FILE & STATE ----------------
 script_dir = os.getenv("HOME")+"/.config"
 flag_file = os.path.join(script_dir, ".aurora_update_flag")
@@ -131,8 +133,16 @@ if not service.exists() or not timer.exists():
 if check.returncode != 0:
     print("Aurora:", random.choice(responses.missing_contrib))
 else:
-    with open("/tmp/aurora.log", "r") as f:
-        updateable_packages = int(f.read().strip())
+    try:
+        with open("/tmp/aurora.log", "r") as f:        
+            updateable_packages = int(f.read().strip())
+    except FileNotFoundError:
+        # if the files doesnt exist we create it by updateing it
+        check_updates();
+        with open("/tmp/aurora.log", "r") as f:        
+            updateable_packages = int(f.read().strip())
+
+            
 package_count()
 update_handler()
 
