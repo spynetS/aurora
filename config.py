@@ -29,3 +29,8 @@ atomic_threshold = 500
 nuclear_threshold = 1000
 
 should_ask_today = False
+
+### Installer options ###
+
+install_shell_hook = False # Set to true if you want Aurora to be installed into your bashRC file, opening it automatically when opening a terminal. (Recomended)
+daemon_timer = 60 # nterval in seconds between checkupdates runs for the daemon.(Applies only during installation; changes afterward must be made in aurora.timer.)
