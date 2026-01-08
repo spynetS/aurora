@@ -23,9 +23,6 @@ import responses
 import subprocess
 import random
 from rich import print
-import os
-import datetime
-import time
 import config
 
 
