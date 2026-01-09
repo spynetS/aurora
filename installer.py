@@ -92,6 +92,39 @@ if not fast_install:
         except Exception as err:
             terminal("Installation failed.")
             terminal(f"Error: {err}")
+        
+        say("One more thing. I’m wiring myself directly into pacman.")
+        say("Any time pacman updates itself, I’ll know. Instantly.")
+
+        for attempt in range(1, MAX_TRIES + 1):
+            terminal("Installing pacman hook...")
+            try:
+                # Creating pacman hook folder if it doesn't exist
+                if not pacman_hook_path.exists():
+                    say("Pacman doesn’t have a hook directory yet. That’s fine. I’ll make one.")
+                    write("sudo mkdir /etc/pacman.d/hooks")
+                    terminal("/etc/pacman.d/hooks path not found")
+                    terminal("creating path /etc/pacman.d/hooks")
+                    subprocess.run(["sudo", "mkdir", "/etc/pacman.d/hooks"])
+
+                say("Dropping the hook in place.")
+                write("sudo tee /etc/pacman.d/hooks/aurora-pacman-update.hook")
+                subprocess.run(
+                    ["sudo", "tee", "/etc/pacman.d/hooks/aurora-pacman-update.hook"],
+                    input=pacman_hook,
+                    text=True,
+                    stdout=subprocess.DEVNULL,
+                    check=True,
+                )
+
+                terminal("pacman update hook successfully installed")
+                say("Done. Pacman moves — I respond.")
+                break
+            except Exception as e:
+                terminal(f"Installation failed: {e}")
+                say("That didn’t work. I’ll try again.")
+                if attempt == MAX_TRIES:
+                    raise
 
         say("Refreshing systemd. It likes to be told when things change.")
         say("I’ll need your password for this part. Don’t worry, I’m not interested in it.")
