@@ -117,7 +117,7 @@ else:
             updateable_packages = int(f.read().strip())
     except FileNotFoundError:
         # if the files doesnt exist we create it by updateing it
-        check_updates()
+        subprocess.run(["sudo", "systemctl", "start", "aurora.service"])
         with open("/tmp/aurora.log", "r") as f:        
             updateable_packages = int(f.read().strip())
 
