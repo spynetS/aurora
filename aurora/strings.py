@@ -1,15 +1,17 @@
 import getpass
 from config import daemon_timer, boot_timer
-
+import os 
 
 user = getpass.getuser()
+
+dir_path = os.path.dirname(os.path.realpath(__file__))
 
 service = f"""[Unit]
 Description=Aurora daemon service
 
 [Service]
 Type=oneshot
-ExecStart=/usr/bin/python /home/{user}/Aurora/aurora/daemon.py """
+ExecStart=/usr/bin/python {dir_path}/daemon.py """
 
 timer = f"""[Unit]
 Description=Run Aurora package counter every {str(daemon_timer)} seconds
