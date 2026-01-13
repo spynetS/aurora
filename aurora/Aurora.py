@@ -77,7 +77,7 @@ def sas_response():
 def update_handler():
     """Handle user prompts or forced updates based on load and stage."""
     sas_response()
-    if updateable_packages < config.normal_threshold :
+    if updateable_packages < config.normal_threshold:
         # Minimal load, no update required
         return
 
