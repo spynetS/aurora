@@ -77,11 +77,11 @@ def sas_response():
 def update_handler():
     """Handle user prompts or forced updates based on load and stage."""
     sas_response()
-    if updateable_packages < config.normal_threshold:
+    if updateable_packages < config.moderate_threshold :
         # Minimal load, no update required
         return
 
-    elif updateable_packages < config.high_threshold:
+    elif updateable_packages > config.high_threshold:
         # Moderate to high load, ask user
         valid_responses = ["y", "n"]
         while True:
@@ -104,6 +104,15 @@ def update_handler():
             f.write("0")
 
 
+def handle_flags():
+    if "--help" in sys.argv:
+        print("aurora","[--actions]")
+        print("--update",10*" ","Will force check updateable package count")
+        exit()
+        
+    if "--update" in sys.argv:
+        check_updates()
+            
 # ---------------- MAIN ----------------
 #Check if pacman-contrib is installed
 check = subprocess.run(["pacman", "-Q", "pacman-contrib"], capture_output=True, text=True)
@@ -111,16 +120,18 @@ check = subprocess.run(["pacman", "-Q", "pacman-contrib"], capture_output=True, 
 
 if check.returncode != 0:
     print("Aurora:", random.choice(responses.missing_contrib))
-else:
-    try:
-        with open("/tmp/aurora.log", "r") as f:        
-            updateable_packages = int(f.read().strip())
-    except FileNotFoundError:
-        # if the files doesnt exist we create it by updateing it
-        subprocess.run(["sudo", "systemctl", "start", "aurora.service"])
-        with open("/tmp/aurora.log", "r") as f:        
-            updateable_packages = int(f.read().strip())
+    exit(1)
 
-            
+handle_flags()    
+
+try:
+    with open("/tmp/aurora.log", "r") as f:        
+        updateable_packages = int(f.read().strip())
+except FileNotFoundError:
+    # if the files doesnt exist we create it by updateing it
+    subprocess.run(["sudo", "systemctl", "start", "aurora.service"])
+    with open("/tmp/aurora.log", "r") as f:        
+        updateable_packages = int(f.read().strip())
+
 package_count()
 update_handler()
