@@ -105,9 +105,10 @@ def update_handler():
 
 
 def handle_flags():
-    if "--help" in sys.argv:
+    if "--help" in sys.argv or "-h" in sys.argv:
         print("aurora","[--actions]")
-        print("--update",10*" ","Will force check updateable package count")
+        print("-h","--help",9*" ","Print this message")
+        print("  ","--update",7*" ","Will force check updateable package count")
         exit()
         
     if "--update" in sys.argv:
