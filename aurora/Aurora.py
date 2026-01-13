@@ -81,7 +81,7 @@ def update_handler():
         # Minimal load, no update required
         return
 
-    elif updateable_packages > config.high_threshold:
+    elif updateable_packages > config.high_threshold and config.ask_update:
         # Moderate to high load, ask user
         valid_responses = ["y", "n"]
         while True:
@@ -106,14 +106,20 @@ def update_handler():
 
 def handle_flags():
     if "--help" in sys.argv or "-h" in sys.argv:
-        print("aurora","[--actions]")
+        print("aurora","[--options]","[--actions]")
         print("-h","--help",9*" ","Print this message")
+        print("  ","--no-update",4*" ","Prevent aurora from asking to, or, auto updating")
         print("  ","--update",7*" ","Will force check updateable package count")
-        exit()
+        exit(0)
         
+    if "--no-update" in sys.argv:
+        config.ask_update = False
+        config.auto_update = False
+
     if "--update" in sys.argv:
         check_updates()
-            
+        
+
 # ---------------- MAIN ----------------
 #Check if pacman-contrib is installed
 check = subprocess.run(["pacman", "-Q", "pacman-contrib"], capture_output=True, text=True)
