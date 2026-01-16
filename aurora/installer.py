@@ -10,8 +10,8 @@ from config import fast_install, install_shell_hook
 ### Definitions ###
 MAX_TRIES = 3
 
-servicePath = Path("/etc/systemd/system/aurora.service")
-timerPath = Path("/etc/systemd/system/aurora.timer")
+servicePath = Path("/etc/systemd/user/aurora.service")
+timerPath = Path("/etc/systemd/user/aurora.timer")
 logPath = Path("/tmp/aurora.log")
 pacman_hook_path = Path("/etc/pacman.d/hooks")
 
@@ -30,10 +30,10 @@ if not fast_install:
     if servicePath.exists():
         say("Existing service detected. I’ll clean that up.")
         say("This might ask for your password. Depends on how recently you proved you’re allowed to do things.")
-        write("sudo rm /etc/systemd/system/aurora.service")
+        write(f"sudo rm {servicePath}")
         try:
             terminal("removing existing aurora.service...")
-            subprocess.run(["sudo", "rm", "/etc/systemd/system/aurora.service"])
+            subprocess.run(["sudo", "rm", servicePath])
             sleep(random.uniform(0.5, 5))
             terminal("aurora.service removed.")
         except Exception as err:
@@ -42,10 +42,10 @@ if not fast_install:
 
     if timerPath.exists():
         say("Existing timer detected. Same fate.")
-        write("sudo rm /etc/systemd/system/aurora.timer")
+        write(f"sudo rm {timerPath}")
         try:
             terminal("removing existing aurora.timer...")
-            subprocess.run(["sudo", "rm", "/etc/systemd/system/aurora.timer"])
+            subprocess.run(["sudo", "rm", timerPath])
             sleep(random.uniform(0.5, 5))
             terminal("aurora.timer removed.")
         except Exception as err:
@@ -60,12 +60,12 @@ if not fast_install:
 
     if not servicePath.exists() or not timerPath.exists():
         say("Installing systemd service.")
-        write(f'"sudo", "tee", "/etc/systemd/system/aurora.service\n{service}"')
+        write(f'"sudo", "tee", "{servicePath}\n{service}"')
         terminal("installing aurora.service...")
         sleep(random.uniform(0.5, 5))
         try:
             subprocess.run(
-                ["sudo", "tee", "/etc/systemd/system/aurora.service"],
+                ["sudo", "tee", servicePath],
                 input=service,
                 text=True,
                 stdout=subprocess.DEVNULL,
@@ -77,12 +77,12 @@ if not fast_install:
             terminal(f"Error: {err}")
 
         say("Installing systemd timer.")
-        write(f'"sudo", "tee", "/etc/systemd/system/aurora.timer\n{timer}"')
+        write(f'"sudo", "tee", "{timerPath}\n{timer}"')
         terminal("installing aurora.timer...")
         sleep(random.uniform(0.5, 5))
         try:
             subprocess.run(
-                ["sudo", "tee", "/etc/systemd/system/aurora.timer"],
+                ["sudo", "tee", timerPath],
                 input=timer,
                 text=True,
                 stdout=subprocess.DEVNULL,
@@ -160,7 +160,7 @@ else:
         for attempt in range(1, MAX_TRIES + 1):
             try:
                 terminal("deleting old aurora.service file, this might require sudo authentication")
-                subprocess.run(["sudo", "rm", "/etc/systemd/system/aurora.service"])
+                subprocess.run(["sudo", "rm", servicePath])
                 terminal("deleted aurora.service")
                 break
             except Exception as e:
@@ -196,7 +196,7 @@ else:
         try:
             terminal("Installing service file")
             subprocess.run(
-                ["sudo", "tee", "/etc/systemd/system/aurora.service"],
+                ["sudo", "tee", servicePath],
                 input=service,
                 text=True,
                 stdout=subprocess.DEVNULL,
@@ -213,7 +213,7 @@ else:
         try:
             terminal("Installing timer file")
             subprocess.run(
-                ["sudo", "tee", "/etc/systemd/system/aurora.timer"],
+                ["sudo", "tee", timerPath],
                 input=timer,
                 text=True,
                 stdout=subprocess.DEVNULL,
@@ -284,7 +284,7 @@ else:
     
     terminal("Instalation complete")
 # Running daemon once
-subprocess.run(["sudo", "systemctl", "start", "aurora.service"])
+subprocess.run(["systemctl", "--user", "start", "aurora.service"])
 
     
 

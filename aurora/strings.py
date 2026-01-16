@@ -11,6 +11,7 @@ Description=Aurora daemon service
 
 [Service]
 Type=oneshot
+User={user}
 ExecStart=/usr/bin/python {dir_path}/daemon.py """
 
 timer = f"""[Unit]
