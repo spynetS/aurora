@@ -127,14 +127,6 @@ def handle_flags():
         
 
 # ---------------- MAIN ----------------
-#Check if pacman-contrib is installed
-#check = subprocess.run(["pacman", "-Q", "pacman-contrib"], capture_output=True, text=True)
-
-
-#if check.returncode != 0:
- #   print("Aurora:", random.choice(responses.missing_contrib))
-  #  exit(1)
-
 handle_flags()    
 
 try:

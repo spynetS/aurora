@@ -1,10 +1,11 @@
 import subprocess
 from strings import service, timer, greeting,pacman_hook
-from functions import say, write, terminal, bash
+from functions import say, write, terminal, bash, get_distro_id, is_arch, is_ubuntu
 from pathlib import Path
 from time import sleep
 import random
-from config import fast_install, install_shell_hook
+from config import fast_install, install_shell_hook, DEPENDENCIES
+import platform
 
 
 ### Definitions ###
@@ -19,13 +20,9 @@ if not fast_install:
     say(greeting)
 
     say("Alright. Let’s set this up properly before you hurt yourself.")
-
-
+    distro = get_distro_id()[0]
+    say("Firstly I need to check what distro you are using.")
     
-
-    
-
-
     # Checking for existing service and timer files and removing them if they exist
     if servicePath.exists():
         say("Existing service detected. I’ll clean that up.")
@@ -155,6 +152,58 @@ if not fast_install:
     
 # Fast install
 else:
+    #Compatabilty check
+    terminal(":: Checking system compatibility")
+    compatible_os = ["linux"]
+    compatible_distros = ["arch", "ubuntu"]
+    
+    os = str(platform.system())
+    
+    if os.lower() in compatible_os:
+        terminal(f"[ OK ] Operating system: {os}")
+    else:
+        terminal(f"[ FAIL ] Operating system: {os} (unsupported)")
+    
+    distro = str(get_distro_id()[0])
+    if distro.lower() in compatible_distros:
+        terminal(f"[ OK ] Distribution: {os}")
+    else:
+        terminal(f"[ FAIL ] Distribution: {os} (unsupported)")
+    
+    #Dependencies check
+    terminal(f":: Checking dependencies for {os}:{distro}")
+    missing = []
+    
+    if is_arch():
+        dependencies = DEPENDENCIES["arch"]
+        for item in dependencies:
+            check = subprocess.run(["pacman", "-Q", item], capture_output=True, text=True)
+            if check.returncode == 0:
+                terminal(f"[ OK ] {item}")
+            else:
+                terminal(f"[ FAIL ] {item}")   
+                missing.append(item)
+                
+        if len(missing) > 0:
+            for item in missing:
+                subprocess.run(["sudo", "pacman", "-S", item], capture_output=True, text=True)
+    
+    elif is_ubuntu():
+        dependencies = DEPENDENCIES["ubuntu"]
+        
+        for item in dependencies:
+            check = subprocess.run(["dpkg", "-s", item], capture_output=True, text=True)
+            if check.returncode == 0:
+                terminal(f"[ OK ] {item}")
+            else:
+                terminal(f"[ FAIL ] {item}")   
+                missing.append(item)
+                
+        if len(missing) > 0:
+            for item in missing:
+                subprocess.run(["sudo", "apt", "install", item], capture_output=True, text=True)
+           
+    
     # Deleting old service file
     if servicePath.exists():
         for attempt in range(1, MAX_TRIES + 1):
@@ -226,27 +275,28 @@ else:
             if attempt == MAX_TRIES:
                 raise
     # Instaling pacman hook
-    for attempt in range(1, MAX_TRIES + 1):
-        terminal("Installing pacman hook")
-        try:
-            # Creating pacman hook folder if it doesn't exist
-            if not pacman_hook_path.exists():
-                terminal("/etc/pacman.d/hooks path not found")
-                terminal("creating path /etc/pacman.d/hooks")
-                subprocess.run(["sudo", "mkdir", "/etc/pacman.d/hooks"])
-            subprocess.run(
-                ["sudo", "tee", "/etc/pacman.d/hooks/aurora-pacman-update.hook"],
-                input=pacman_hook,
-                text=True,
-                stdout=subprocess.DEVNULL,
-                check=True,
-            )
-            terminal("pacman update hook sucefsfully installed")
-            break
-        except Exception as e:
-            terminal(f"Installation failed: {e}")
-            if attempt == MAX_TRIES:
-                raise
+    if is_arch():
+        for attempt in range(1, MAX_TRIES + 1):
+            terminal("Installing pacman hook")
+            try:
+                # Creating pacman hook folder if it doesn't exist
+                if not pacman_hook_path.exists():
+                    terminal("/etc/pacman.d/hooks path not found")
+                    terminal("creating path /etc/pacman.d/hooks")
+                    subprocess.run(["sudo", "mkdir", "/etc/pacman.d/hooks"])
+                subprocess.run(
+                    ["sudo", "tee", "/etc/pacman.d/hooks/aurora-pacman-update.hook"],
+                    input=pacman_hook,
+                    text=True,
+                    stdout=subprocess.DEVNULL,
+                    check=True,
+                )
+                terminal("pacman update hook sucefsfully installed")
+                break
+            except Exception as e:
+                terminal(f"Installation failed: {e}")
+                if attempt == MAX_TRIES:
+                    raise
     # Reloading daemon
     for attempt in range(1, MAX_TRIES + 1):
         terminal("Reloading daemon services")

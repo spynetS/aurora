@@ -4,6 +4,7 @@ import random
 from pathlib import Path
 from datetime import datetime
 import getpass
+import platform
 
 
 
@@ -48,7 +49,7 @@ def terminal(msg):
 
 def bash():
     with open(f"/home/{user}/.bashrc", "a") as f:
-        f.write(f"python {Path.cwd()}/Aurora.py")
+        f.write(f"python3 {Path.cwd()}/Aurora.py")
 
 def get_distro_id():
     distro = {}
@@ -65,4 +66,3 @@ def is_arch():
 def is_ubuntu():
     id_, like = get_distro_id()
     return id_ == "ubuntu" or (like and "debian" in like)
-
