@@ -50,3 +50,11 @@ def bash():
     with open(f"/home/{user}/.bashrc", "a") as f:
         f.write(f"python {Path.cwd()}/Aurora.py")
 
+def get_distro_id():
+    distro = {}
+    with open("/etc/os-release") as f:
+        for line in f:
+            if "=" in line:
+                k, v = line.rstrip().split("=", 1)
+                distro[k] = v.strip('"')
+    return distro.get("ID"), distro.get("ID_LIKE")
