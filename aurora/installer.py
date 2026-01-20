@@ -16,12 +16,69 @@ timerPath = Path("/etc/systemd/user/aurora.timer")
 logPath = Path("/tmp/aurora.log")
 pacman_hook_path = Path("/etc/pacman.d/hooks")
 
+compatible_os = ["linux"]
+compatible_distros = ["arch", "ubuntu"]
+
 if not fast_install:
     say(greeting)
 
     say("Alright. Let’s set this up properly before you hurt yourself.")
+    
+    #Compatabilty check
     distro = get_distro_id()[0]
     say("Firstly I need to check what distro you are using.")
+    
+    ## Some write to find os here !!!!
+    os = str(platform.system())
+    
+    if os.lower() in compatible_os:
+        say(f"Ahh {os} perfekt!")
+    else:
+        say(f"wtf is {os}? I do not support that shit")
+    
+    say("Now I need to make sure we are compatible")
+    distro = str(get_distro_id()[0])
+    
+    if distro.lower() in compatible_distros:
+        say(f"Perfekt! you are using {distro}, you actually did your homework for once")
+    else:
+        say(f"seriously? {os}, did you even try to read the installation instructions?")
+    
+    #Dependencies check
+    say(f"Now I have to check that you have the right dependencies for {os}:{distro}")
+    missing = []
+    
+    if is_arch():
+        say("Since you are using arch, my favorite distro btw, I will have to check that you have the right dependencies")
+        dependencies = DEPENDENCIES["arch"]
+        for item in dependencies:
+            check = subprocess.run(["pacman", "-Q", item], capture_output=True, text=True)
+            if check.returncode == 0:
+                terminal(f"[ OK ] {item}")
+            else:
+                terminal(f"[ FAIL ] {item}")   
+                missing.append(item)
+                
+        if len(missing) > 0:
+            for item in missing:
+                subprocess.run(["sudo", "pacman", "-S", item], capture_output=True, text=True)
+    
+    elif is_ubuntu():
+        dependencies = DEPENDENCIES["ubuntu"]
+        say("Since you are using arch, my favorite distro btw, I will have to check that you have the right dependencies")
+        
+        for item in dependencies:
+            check = subprocess.run(["dpkg", "-s", item], capture_output=True, text=True)
+            if check.returncode == 0:
+                terminal(f"[ OK ] {item}")
+            else:
+                terminal(f"[ FAIL ] {item}")   
+                missing.append(item)
+                
+        if len(missing) > 0:
+            for item in missing:
+                subprocess.run(["sudo", "apt", "install", item], capture_output=True, text=True)
+           
     
     # Checking for existing service and timer files and removing them if they exist
     if servicePath.exists():
@@ -154,8 +211,6 @@ if not fast_install:
 else:
     #Compatabilty check
     terminal(":: Checking system compatibility")
-    compatible_os = ["linux"]
-    compatible_distros = ["arch", "ubuntu"]
     
     os = str(platform.system())
     
@@ -166,9 +221,9 @@ else:
     
     distro = str(get_distro_id()[0])
     if distro.lower() in compatible_distros:
-        terminal(f"[ OK ] Distribution: {os}")
+        terminal(f"[ OK ] Distribution: {distro}")
     else:
-        terminal(f"[ FAIL ] Distribution: {os} (unsupported)")
+        terminal(f"[ FAIL ] Distribution: {distro} (unsupported)")
     
     #Dependencies check
     terminal(f":: Checking dependencies for {os}:{distro}")
