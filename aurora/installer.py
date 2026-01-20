@@ -21,10 +21,6 @@ if not fast_install:
     say("Alright. Let’s set this up properly before you hurt yourself.")
 
 
-    
-
-    
-
 
     # Checking for existing service and timer files and removing them if they exist
     if servicePath.exists():
