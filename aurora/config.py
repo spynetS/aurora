@@ -33,6 +33,6 @@ should_ask_today = False
 
 ### Installer options ###
 fast_install = False # Set to true if you want to skip the interactive Aurora install process
-install_shell_hook = False # Set to true if you want Aurora to be installed into your bashRC file, opening it automatically when opening a terminal. (Recomended)
-daemon_timer = 600 # Daemon timer intervall in seconds (defailt 10 minutes)
+install_shell_hook = False # Set to true if you want Aurora to be installed into your .bashrc file, opening it automatically when opening a terminal. (Recommended)
+daemon_timer = 600 # Daemon timer interval in seconds (default 10 minutes)
 boot_timer = 0 # Daemon on boot timer, how long after boot should timer run (0 seconds by default)
