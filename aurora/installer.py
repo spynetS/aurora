@@ -334,7 +334,7 @@ else:
         for attempt in range(1, MAX_TRIES + 1):
             terminal("Installing pacman hook")
             try:
-                # Creating pacman hook folder if it doesn't exist
+                # Creating pacman hook folder if it doesn't exist 
                 if not pacman_hook_path.exists():
                     terminal("/etc/pacman.d/hooks path not found")
                     terminal("creating path /etc/pacman.d/hooks")
@@ -356,7 +356,7 @@ else:
     for attempt in range(1, MAX_TRIES + 1):
         terminal("Reloading daemon services")
         try:
-            subprocess.run(["systemctl", "daemon-reload"])
+            subprocess.run(["systemctl", "--user", "daemon-reload"])
             terminal("Daemon services sucessfully reloaded")
             break
         except Exception as e:
