@@ -47,10 +47,14 @@ def terminal(msg):
     print(f"({ts}) {msg}")
     sleep(0.4)
 
-def bash():
+def add_to_bashrc():
+    with open(f"/home/{user}/.bashrc", "r") as f:
+        if "# Aurora shell hook" in f.read():
+            return
     with open(f"/home/{user}/.bashrc", "a") as f:
-        f.write(f"python3 {Path.cwd()}/Aurora.py")
-
+        f.write("\n# Aurora shell hook\n")
+        f.write(f"python {Path.cwd()}/Aurora.py")
+        
 def get_distro_id():
     distro = {}
     with open("/etc/os-release") as f:
