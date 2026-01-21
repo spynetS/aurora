@@ -25,6 +25,8 @@ import random
 from rich import print
 import aurora.settings as settings
 
+from config.paths import *
+
 
 from daemon import check_updates
 
@@ -32,7 +34,6 @@ from functions import get_distro_id, is_arch, is_ubuntu
 
 
 #---------------- FILE PATHS ----------------
-result_storage_file = "/tmp/aurora.log"
 
 # ---------------- FUNCTIONS ----------------
 def update():
@@ -96,7 +97,7 @@ def update_handler():
             if inpt in valid_responses:
                 if inpt == "y":
                     update()
-                    with open(result_storage_file, "w") as f:
+                    with open(log_path, "w") as f:
                         f.write("0")
                 break
             else:
@@ -106,7 +107,7 @@ def update_handler():
         # Forced auto-update
         print("Aurora:", random.choice(responses.aurora_auto_update_responses))
         update()
-        with open(result_storage_file, "w") as f:
+        with open(log_path, "w") as f:
             f.write("0")
 
 
@@ -130,12 +131,12 @@ def handle_flags():
 handle_flags()    
 
 try:
-    with open("/tmp/aurora.log", "r") as f:        
+    with open(log_path, "r") as f:        
         updateable_packages = int(f.read().strip())
 except FileNotFoundError:
     # if the files doesnt exist we create it by updateing it
     subprocess.run(["systemctl", "--user", "start", "aurora.service"])
-    with open("/tmp/aurora.log", "r") as f:        
+    with open(log_path, "r") as f:        
         updateable_packages = int(f.read().strip())
 
 package_count()
