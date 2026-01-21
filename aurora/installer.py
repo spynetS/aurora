@@ -6,15 +6,13 @@ from time import sleep
 import random
 from aurora.settings import fast_install, install_shell_hook, DEPENDENCIES
 import platform
+from config.paths import *
 
 
 ### Definitions ###
 MAX_TRIES = 3
 
-servicePath = Path("/etc/systemd/user/aurora.service")
-timerPath = Path("/etc/systemd/user/aurora.timer")
-logPath = Path("/tmp/aurora.log")
-pacman_hook_path = Path("/etc/pacman.d/hooks")
+
 
 compatible_os = ["linux"]
 compatible_distros = ["arch", "ubuntu"]
@@ -289,11 +287,11 @@ else:
                 if attempt == MAX_TRIES:
                     raise
     # Deleting aurora log
-    if logPath.exists():
+    if log_path.exists():
         for attempt in range(1, MAX_TRIES + 1):
             try:
                 terminal("deleting old aurora.log file, this might require sudo authentication")
-                subprocess.run(["sudo", "rm", "/tmp/aurora.log"], check=True)
+                subprocess.run(["sudo", "rm", log_path], check=True)
                 terminal("succesfully deleted aurora.log")
                 break
             except subprocess.CalledProcessError as e:

@@ -23,7 +23,7 @@ import responses
 import subprocess
 import random
 from rich import print
-import aurora.settings as settings
+import settings as settings
 
 from config.paths import *
 
