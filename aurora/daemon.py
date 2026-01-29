@@ -18,7 +18,11 @@ def check_updates():
         ))
     else:
         result = subprocess.run(["checkupdates"], capture_output=True, text=True)
-        updateable_packages = str(len(result.stdout.splitlines()))
+        if result.returncode == 0:
+            updateable_packages = str(len(result.stdout.splitlines()))
+        else:
+            updateable_packages = "ERROR"
+        
     with open(log_path, "w") as f:
         f.write(updateable_packages)
 
