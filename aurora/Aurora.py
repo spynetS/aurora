@@ -41,7 +41,11 @@ from functions import get_distro_id, is_arch, is_ubuntu
 def update():
     distro = get_distro()
     distro.update()
-    check_updates()
+    try:
+        distro.check_updates()
+    except Exception as e:
+        print("Couldn't check updates:", e)
+        exit(1)
 
 def package_count():
     """Print package count with color according to severity."""
@@ -130,10 +134,14 @@ try:
             updateable_packages = int(f.read().strip())
         except ValueError:
             print("Aurora couldn't fetch updateable packages")
-            exit(0)
+            exit(1)
 except FileNotFoundError:
     # if the files doesnt exist we create it by updateing it
-    check_updates()
+    try:
+        updateable_packages = check_updates()
+    except Exception as e:
+        print("Couldn't fetch updates:", e)
+        exit(1)
     subprocess.run(["systemctl", "--user", "start", "aurora.service"])
     with open(log_path, "r") as f:        
         updateable_packages = int(f.read().strip())
