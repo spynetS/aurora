@@ -1,9 +1,10 @@
 from .driver import Driver
 import subprocess
-from strings import pacman_hook
-from config.paths import *
+from aurora.strings import pacman_hook
+from aurora.config.paths import *
 
 class Archlinux(Driver):
+
 
     def __init__(self):
         self.dependencies = [
@@ -12,14 +13,15 @@ class Archlinux(Driver):
             "systemd",
         ]
     
-    def update():
-        subprocess.run(["sudo", "pacman", "-Syu", "--noconfirm"])
+    def update(self):
+        return subprocess.run(["sudo", "pacman", "-Syu", "--noconfirm"])
+        
 
     def check_updates(self):
         result = subprocess.run(["checkupdates"], capture_output=True, text=True)
         if result.returncode == 0:
             return str(len(result.stdout.splitlines()))
-        raise Error()
+        raise Archlinux.Error()
 
     def check_dependencies(self, say=lambda x: None , terminal=lambda x:None):
         missing = []

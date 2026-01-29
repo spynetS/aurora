@@ -1,6 +1,8 @@
 class Driver:
 
     # need self.dependencies
+    class Error(Exception):
+        pass
     
     def update():
         pass

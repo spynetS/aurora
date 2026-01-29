@@ -25,13 +25,12 @@ class Ubuntu(Driver):
                 1 for line in result.stdout.splitlines()
                 if line and not line.startswith("Listing")
             ))
-        raise Error()
+        raise Ubuntu.Error()
 
     def check_dependencies(self,say=lambda x: None, terminal=lambda x: None):
-        dependencies = DEPENDENCIES["ubuntu"]
         say("Since you are using Ubuntu I’ll check the dependencies myself. Apt likes to say things are fine when they’re not.")
         
-        for item in dependencies:
+        for item in self.dependencies:
             check = subprocess.run(["dpkg", "-s", item], capture_output=True, text=True)
             if check.returncode == 0:
                 terminal(f"[ OK ] {item}")
@@ -44,3 +43,4 @@ class Ubuntu(Driver):
             for item in missing:
                 write(f"sudo apt install {item}")
                 subprocess.run(["sudo", "apt", "install", item], capture_output=True, text=True)
+        
