@@ -5,8 +5,8 @@ from pathlib import Path
 from datetime import datetime
 import getpass
 import platform
-from drivers.ubuntu import Ubuntu
-from drivers.arch import Archlinux
+from aurora.drivers.ubuntu import Ubuntu
+from aurora.drivers.arch import Archlinux
 
 
 start = 0.01
