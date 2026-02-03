@@ -27,8 +27,10 @@ class Ubuntu(Driver):
             ))
         raise Ubuntu.Error()
 
-    def check_dependencies(self,say=lambda x: None, terminal=lambda x: None):
+    def check_dependencies(self,say=lambda x: None, terminal=lambda x: None, write=lambda x: None):
         say("Since you are using Ubuntu I’ll check the dependencies myself. Apt likes to say things are fine when they’re not.")
+        
+        missing = []
         
         for item in self.dependencies:
             check = subprocess.run(["dpkg", "-s", item], capture_output=True, text=True)
