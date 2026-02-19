@@ -149,7 +149,7 @@ def main():
         with open(state_path, "r") as f:        
             updateable_packages = int(f.read().strip())
     
-    package_count()
+    package_count(updateable_packages)
     update_handler()
 
 if __name__ == "__main__":
