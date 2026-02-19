@@ -45,7 +45,7 @@ def update():
         print("Couldn't check updates:", e)
         exit(1)
 
-def package_count():
+def package_count(updateable_packages):
     """Print package count with color according to severity."""
     if updateable_packages < settings.normal_threshold:
         color = "green"
