@@ -1,5 +1,5 @@
 from aurora.functions import get_distro
-from aurora.config.paths import state_path, important_updates_path
+from aurora.config.paths import state_path
 import json
 import os
 from datetime import datetime, timezone

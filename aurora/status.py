@@ -1,4 +1,3 @@
-from collections import Counter
 from aurora.config.paths import state_path, important_updates_path
 import json
 from aurora.responses import low_severity, medium_severity, high_severity, critical_severty

@@ -1,4 +1,4 @@
-from typing import Set, List
+from typing import Set
 
 
 class Driver:
