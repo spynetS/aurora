@@ -76,7 +76,7 @@ class Ubuntu(Driver):
             
         ]
     
-    def update():
+    def update(self):
         subprocess.run(["sudo", "apt", "upgrade"])
 
     def check_updates(self):
