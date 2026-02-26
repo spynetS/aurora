@@ -85,6 +85,8 @@ def affected_areas(cattegories):
     
     print("Breakdown:")
     for item, count in counts.items():
+        if item == "unknown":
+            continue
         print(f"    {item}: ", end="")
         for _ in range(count):
             print("▉", end="")
@@ -101,7 +103,7 @@ def summary(cattegories):
         item_string = f"{count} {CATEGORY_SUMMARY[item].capitalize()}"
         array.append(item_string)
         
-    output = " and ".join(array)
+    output = ", ".join(array)
     
     print("Summary: ", end="")
     print(output, end=" pending\n")
