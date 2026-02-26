@@ -41,4 +41,25 @@ ExecStart=/usr/bin/python3 -m aurora.daemon
 
 greeting = f"""Hello {user}! I’m Aurora your personal system assistant. Let’s get things running."""
 
+CATEGORY_SUMMARY = {
+    # Core system
+    "kernel": "kernel updates",
+    "boot": "boot process updates",
+    "bootloader": "bootloader updates",
+    "core": "core system services",
+    "core-lib": "foundational system libraries",
+
+    # System maintenance
+    "package-manager": "package management components",
+    "runtime": "language runtimes",
+
+    # Security & trust
+    "crypto": "cryptographic libraries",
+    "trust": "system trust stores",
+
+    # Fallback
+    "unknown": "unclassified packages",
+}
+
+
 

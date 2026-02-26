@@ -9,30 +9,16 @@ def check_updates():
     updateable_packages = distro.check_updates()
     with open(state_path, "w") as f:
         f.write(updateable_packages)
-        
-def write_json_atomic(path: str, data: dict) -> None:
-    tmp_path = path + ".tmp"
     
-    # Write complete JSON to a temp file first
-    with open(tmp_path, "w", encoding="utf-8") as f:
-        json.dump(data, f, indent=2)
-        f.flush()
-        os.fsync(f.fileno()) # ensure its on disk
-        
-        # Atmoic replace
-        os.replace(tmp_path, path)
-        
-
-def check_important_packages():
+    
+def create_list():
     distro = get_distro()
-    pkg_list = distro.count_important_packages()
-    payload = {
-        "generated_at": datetime.now(timezone.utc).isoformat(),
-        "distro": distro.__class__.__name__.lower(),
-        "important_updates": pkg_list,    
-    }
-    write_json_atomic("/tmp/important-updates.json", payload)
+    updates_list = distro.get_pkg_list()
+    with open("/tmp/update-list.txt", "w") as f:
+        for item in updates_list:
+            f.write(item)
+            f.write("\n")
 
 if __name__ == "__main__":
     check_updates()
-    check_important_packages()
+    create_list()

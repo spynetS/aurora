@@ -65,6 +65,7 @@ class Ubuntu(Driver):
         "risk": "medium",
         "category": "trust",
     },
+    
 }
 
     
@@ -77,7 +78,7 @@ class Ubuntu(Driver):
         ]
     
     def update(self):
-        subprocess.run(["sudo", "apt", "upgrade"])
+        return subprocess.run(["sudo", "apt", "upgrade"])
 
     def check_updates(self):
         result = subprocess.run(
@@ -116,6 +117,25 @@ class Ubuntu(Driver):
     def get_pkg_name(self, update_entry):
         split =update_entry.split("/")
         return split[0]
+    
+    def get_pkg_list(self):
+        result = subprocess.run(
+            ["apt", "list", "--upgradable"],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.DEVNULL,
+            text=True
+        )
+        if result.returncode == 0 or result.returncode == 2:
+            names = []
+            for entry in result.stdout.splitlines():
+                entry = entry.strip()
+                if not entry or entry.startswith("Listing"):
+                    continue
+                names.append(self.get_pkg_name(entry))
+            return names
+            
+           
+        raise Ubuntu.Error()
     
     def count_important_packages(self):
         result = subprocess.run(
