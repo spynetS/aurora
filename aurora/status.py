@@ -1,14 +1,12 @@
 from __future__ import annotations
 
-import json
 import random
 
 from rich import print as cprint
 from aurora.functions import get_distro
 from collections import Counter
 
-from aurora.config.paths import important_updates_path, state_path
-from aurora.main import package_count
+from aurora.config.paths import state_path
 from aurora.responses import (
     critical_severty,
     high_severity,
@@ -38,9 +36,9 @@ distro = get_distro()
            
 
 def get_risk_level(update_items: list[dict]) -> str:
-    critical_present = False
+  
     risk_sum = 0
-    flagged_item_sum = 0
+
     for item in update_items:
         package_prefix = str(item).split("-")[0]
         
@@ -182,7 +180,7 @@ def main():
     details(packages)
     
     
-    print(f"Recomendation:")
+    print("Recomendation:")
     print(f"    {recommendation}")
 
 if __name__ == "__main__":

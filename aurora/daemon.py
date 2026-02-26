@@ -1,8 +1,5 @@
 from aurora.functions import get_distro
 from aurora.config.paths import state_path
-import json
-import os
-from datetime import datetime, timezone
 
 def check_updates():
     distro = get_distro()
