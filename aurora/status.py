@@ -98,7 +98,10 @@ def summary(cattegories):
         
         if item == "unknown":
             continue
-        item_string = f"{count} {CATEGORY_SUMMARY[item].capitalize()}"
+        if item in CATEGORY_SUMMARY:
+            item_string = f"{count} {CATEGORY_SUMMARY[item].capitalize()}"
+        else:
+            item_string = f"{count} {item}"
         array.append(item_string)
         
     output = ", ".join(array)
