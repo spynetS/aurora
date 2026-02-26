@@ -31,6 +31,8 @@ import aurora.settings as settings
 from aurora.config.paths import state_path
 from aurora.daemon import check_updates
 
+
+
 updateable_packages = 0
 
 # ---------------- FUNCTIONS ----------------
@@ -43,7 +45,7 @@ def update():
         print("Couldn't check updates:", e)
         exit(1)
 
-def package_count():
+def package_count(updateable_packages):
     """Print package count with color according to severity."""
     if updateable_packages < settings.normal_threshold:
         color = "green"
@@ -122,7 +124,8 @@ def handle_flags():
             check_updates()
         except OSError:
             print("Couldnt fetch")
-
+            
+     
 
 def main():
     global updateable_packages
@@ -146,7 +149,7 @@ def main():
         with open(state_path, "r") as f:        
             updateable_packages = int(f.read().strip())
     
-    package_count()
+    package_count(updateable_packages)
     update_handler()
 
 if __name__ == "__main__":
