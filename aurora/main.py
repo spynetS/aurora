@@ -111,8 +111,10 @@ def handle_flags():
     if "--help" in sys.argv or "-h" in sys.argv:
         print("aurora","[--options]","[--actions]")
         print("-h","--help",9*" ","Print this message")
+        print("  ","status",9*" ","Will generate a status about the packages missing")
         print("  ","--no-update",4*" ","Prevent aurora from asking to, or, auto updating")
         print("  ","--update",7*" ","Will force check updateable package count")
+
         exit(0)
 
     if "status" in sys.argv:
