@@ -16,7 +16,7 @@
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 # TO RUN python -m aurora.main
- 
+import os
 import sys
 sys.path.append("/usr/lib/aurora")
 import aurora.responses as responses
@@ -28,18 +28,28 @@ import random
 from rich import print
 import aurora.settings as settings
 
-from aurora.config.paths import state_path
+from aurora.config.paths import state_path, is_updating_path
 from aurora.daemon import check_updates
 from aurora.status import main as status_main
 
 
 updateable_packages = 0
+is_updating = False
 
 # ---------------- FUNCTIONS ----------------
 def update():
     global updateable_packages
     distro = get_distro()
+
+    is_updating = True
+    with open(is_updating_path, "w") as f:
+        f.write("True")
+
     distro.update()
+
+    os.remove(is_updating_path)
+    is_updating = False
+    
     try:
         updateable_packages = distro.check_updates()
     except Exception as e:
@@ -80,14 +90,20 @@ def sas_response():
 
 def update_handler():
     """Handle user prompts or forced updates based on load and stage."""
+    global is_updating
     sas_response()
+
+    if is_updating_path.is_file():
+        is_updating = True
+        
     if updateable_packages < settings.normal_threshold:
         # Minimal load, no update required
         return
 
-    elif updateable_packages < settings.high_threshold and settings.ask_update:
+    elif updateable_packages < settings.high_threshold and settings.ask_update and not is_updating:
         # Moderate to high load, ask user
         valid_responses = ["y", "n"]
+
         while True:
             print("Aurora: Do you want me to update? (y/n)")
             inpt = input("> ").strip().lower()
