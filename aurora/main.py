@@ -37,10 +37,11 @@ updateable_packages = 0
 
 # ---------------- FUNCTIONS ----------------
 def update():
+    global updateable_packages
     distro = get_distro()
     distro.update()
     try:
-        distro.check_updates()
+        updateable_packages = distro.check_updates()
     except Exception as e:
         print("Couldn't check updates:", e)
         exit(1)
