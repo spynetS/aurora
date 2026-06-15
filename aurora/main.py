@@ -34,11 +34,13 @@ from aurora.status import main as status_main
 
 from datetime import datetime, timedelta
 
+import json
+
 
 updateable_packages = 0
 is_updating = False
 
-cooldown_file = cache_path / "update-cooldown"
+cooldown_file = cache_path / "update-cooldown.json"
 
 # ---------------- FUNCTIONS ----------------
 def update():
@@ -94,7 +96,25 @@ def sas_response():
             print("Aurora:", random.choice(responses.stage_4))
     else:
         print("Aurora:", random.choice(responses.stage_5))
+        
+        
+def load_cooldown_data():
+    if not cooldown_file.exists():
+        return {
+            "no_count": 0,
+            "cooldown_until": None
+        }
+
+    with open(cooldown_file, "r") as f:
+        return json.load(f)
     
+
+def save_cooldown_data(data):
+    cooldown_file.parent.mkdir(parents=True, exist_ok=True)
+
+    with open(cooldown_file, "w") as f:
+        json.dump(data, f, indent=4)
+        
 
 def should_ask_update():
     global cooldown_file
@@ -102,16 +122,18 @@ def should_ask_update():
     if not cooldown_file.is_file():
         return True
     
-    with open(cooldown_file, "r") as f:
-        cooldown_string = f.read().strip()
+    data = load_cooldown_data()
+    
+    cooldown_until = datetime.fromisoformat(data["cooldown_until"])
         
-    cooldown_time = datetime.fromisoformat(cooldown_string)
     current_time = datetime.now()
     
-    if current_time >= cooldown_time:
+    if current_time >= cooldown_until:
         return True
     
     return False
+
+
         
 
 def update_handler():
@@ -145,11 +167,22 @@ def update_handler():
                 else:
                     cooldown_file.parent.mkdir(parents=True, exist_ok=True)
                     
-                    with open(cooldown_file, "w") as f:
-                        current_time = datetime.now()
-                        cooldown_until = current_time + timedelta(seconds=settings.cooldown_time)
-                        
-                        f.write(str(cooldown_until))
+                    data = load_cooldown_data()
+                    
+                    no_count = int(data["no_count"]) + 1
+                    
+                    cooldown_time = min(settings.base_cooldown_time * no_count * 2, settings.max_cooldown)
+                    
+                    current_time = datetime.now()
+                    cooldown_until = current_time + timedelta(seconds=cooldown_time)
+                    
+                    new_data = {
+                        "no_count": no_count,
+                        "cooldown_until": str(cooldown_until)
+                    }
+                    
+                    save_cooldown_data(new_data)
+                    
                     break
             else:
                 print("Aurora:", random.choice(responses.invalid_input_responses))
